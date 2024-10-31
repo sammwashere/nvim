@@ -38,7 +38,8 @@ return {
     -- enable servers that you already have installed without mason
     servers = {
       -- "pyright"
-      "ts_ls"
+      "ts_ls",
+      "svelte"
     },
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
@@ -99,6 +100,13 @@ return {
     on_attach = function(client, bufnr)
       -- this would disable semanticTokensProvider for all clients
       -- client.server_capabilities.semanticTokensProvider = nil
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = { "*.js", "*.ts" },
+        callback = function(ctx)
+          -- Here use ctx.match instead of ctx.file
+        client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
+        end,
+      })
     end,
   },
 }
